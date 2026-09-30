@@ -1,0 +1,2416 @@
+/**
+ * Products Grid
+ */
+
+.kmcb {
+	--kmcb-cols: 3;
+	--kmcb-gap-x: 20px;
+	--kmcb-gap-y: 26px;
+	--kmcb-sidebar-w: 270px;
+	--kmcb-sidebar-gap: 32px;
+
+	--kmcb-accent: #2c2c2c;
+	--kmcb-ink: #2c2c2c;
+	--kmcb-muted: #9aa2a6;
+	--kmcb-line: #eaeaea;
+
+	--kmcb-panel-bg: #f7f5f0;
+	--kmcb-panel-radius: 14px;
+	--kmcb-panel-pad-y: 28px;
+	--kmcb-panel-pad-x: 26px;
+
+	--kmcb-search-w: 520px;
+	--kmcb-fs: 1;
+	--kmcb-opt-line: #e4e0d6;
+
+	--kmcb-card-radius: 16px;
+	--kmcb-card-ratio: 1;
+	--kmcb-card-bg: #f3f1ec;
+
+	--kmcb-badge-bg: #2c2c2c;
+	--kmcb-badge-color: #fff;
+
+	--kmcb-wave-h: 34%;
+	--kmcb-wave-curve: 26%;
+	--kmcb-blend-angle: 160deg;
+	--kmcb-img-zoom: 1.06;
+
+	--kmcb-filters-title: var(--kmcb-ink);
+	--kmcb-clear-color: var(--kmcb-muted);
+	--kmcb-group-color: var(--kmcb-muted);
+	--kmcb-option-color: var(--kmcb-ink);
+	--kmcb-option-sub-color: var(--kmcb-muted);
+	--kmcb-check-border: #d9dcda;
+	--kmcb-check-bg: var(--kmcb-accent);
+	--kmcb-check-tick: #fff;
+
+	color: var(--kmcb-ink);
+	position: relative;
+}
+
+.kmcb *,
+.kmcb *::before,
+.kmcb *::after {
+	box-sizing: border-box;
+}
+
+.kmcb .screen-reader-text {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ Toolbar */
+
+.kmcb-toolbar {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	align-items: center;
+	gap: 20px;
+	padding-bottom: 16px;
+	border-bottom: 1px solid var(--kmcb-line);
+}
+
+.kmcb-toolbar-start {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+}
+
+.kmcb-tabs {
+	display: flex;
+	align-items: center;
+	gap: 26px;
+	flex-wrap: wrap;
+	margin-bottom: -17px;
+}
+
+.kmcb-tab {
+	font-size: calc(13px * var(--kmcb-fs));
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--kmcb-muted);
+	text-decoration: none;
+	padding-bottom: 14px;
+	border-bottom: 2px solid transparent;
+	transition: color 0.15s ease, border-color 0.15s ease;
+	white-space: nowrap;
+}
+
+.kmcb-tab:hover,
+.kmcb-tab:focus-visible {
+	color: var(--kmcb-ink);
+}
+
+.kmcb-tab.is-active {
+	color: var(--kmcb-ink);
+	border-bottom-color: var(--kmcb-ink);
+}
+
+.kmcb-search {
+	position: relative;
+	/*
+	 * A fixed length, not min(..., 100%). The middle grid track is sized from
+	 * its content, so a percentage width here is circular: browsers resolve it
+	 * as auto during track sizing and the declared width is thrown away, which
+	 * made the width control do nothing.
+	 */
+	width: var(--kmcb-search-w);
+	max-width: 100%;
+	justify-self: center;
+}
+
+/*
+ * Off-centre placements drop the three-track grid for a flex row, so the
+ * search can lead while the tabs keep their place beside it.
+ */
+.kmcb-toolbar--search-start,
+.kmcb-toolbar--search-end {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	row-gap: 12px;
+}
+
+.kmcb-toolbar--search-start .kmcb-search {
+	order: 1;
+	justify-self: auto;
+}
+
+.kmcb-toolbar--search-start .kmcb-toolbar-start {
+	order: 2;
+}
+
+.kmcb-toolbar--search-start .kmcb-toolbar-end {
+	order: 3;
+	margin-inline-start: auto;
+}
+
+.kmcb-toolbar--search-end .kmcb-toolbar-start {
+	order: 1;
+}
+
+.kmcb-toolbar--search-end .kmcb-search {
+	order: 2;
+	margin-inline-start: auto;
+	justify-self: auto;
+}
+
+.kmcb-toolbar--search-end .kmcb-toolbar-end {
+	order: 3;
+}
+
+/* With no tabs the empty track would still take a share of the row. */
+.kmcb-toolbar--search-start .kmcb-toolbar-start:empty,
+.kmcb-toolbar--search-end .kmcb-toolbar-start:empty {
+	display: none;
+}
+
+.kmcb-search--empty {
+	width: 0;
+}
+
+.kmcb-search-icon {
+	position: absolute;
+	left: 16px;
+	top: 50%;
+	width: 14px;
+	height: 14px;
+	transform: translateY(-50%);
+	color: var(--kmcb-muted);
+	pointer-events: none;
+}
+
+.kmcb-search-input {
+	width: 100%;
+	height: 40px;
+	padding: 0 16px 0 38px;
+	font-size: calc(14px * var(--kmcb-fs));
+	color: var(--kmcb-ink);
+	background: #fff;
+	border: 1px solid var(--kmcb-line);
+	border-radius: 999px;
+	outline: none;
+	transition: border-color 0.15s ease;
+}
+
+.kmcb-search-input::placeholder {
+	color: var(--kmcb-muted);
+}
+
+.kmcb-search-input:focus {
+	border-color: var(--kmcb-accent);
+}
+
+.kmcb-toolbar-end {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 16px;
+	min-width: 0;
+}
+
+/* The short rule between the result count and the sort control. */
+.kmcb-toolbar-rule {
+	width: 18px;
+	height: 1px;
+	flex: none;
+	background: var(--kmcb-line);
+}
+
+.kmcb-count {
+	font-size: calc(14px * var(--kmcb-fs));
+	color: var(--kmcb-muted);
+	white-space: nowrap;
+}
+
+.kmcb-sort {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: calc(14px * var(--kmcb-fs));
+	color: var(--kmcb-muted);
+}
+
+.kmcb-sort-label {
+	white-space: nowrap;
+}
+
+.kmcb-sort-select {
+	border: 0;
+	background: transparent;
+	font: inherit;
+	font-weight: 600;
+	color: var(--kmcb-ink);
+	cursor: pointer;
+	padding-inline-end: 2px;
+
+	/* A select is as wide as its widest option, so the box would keep the
+	   width of "Price: High to Low" whatever is showing, and the native
+	   arrow would sit at the far end of it. The script narrows it to the
+	   selected option; this is the cap it works inside, and the native
+	   version of the same thing where the browser supports it. */
+	max-width: 100%;
+	field-sizing: content;
+}
+
+.kmcb-views {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.kmcb-view {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	padding: 0;
+	border: 0;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--kmcb-muted);
+	cursor: pointer;
+	transition: background 0.15s ease, color 0.15s ease;
+}
+
+.kmcb-view svg {
+	width: 14px;
+	height: 14px;
+	fill: currentColor;
+}
+
+.kmcb-view:hover {
+	color: var(--kmcb-ink);
+}
+
+.kmcb-view.is-active {
+	background: var(--kmcb-ink);
+	color: #fff;
+}
+
+.kmcb-mobile-filters {
+	display: none;
+	align-items: center;
+	gap: 7px;
+	height: 32px;
+	padding: 0 14px;
+	font-size: calc(13px * var(--kmcb-fs));
+	font-weight: 600;
+	color: var(--kmcb-ink);
+	background: transparent;
+	border: 1px solid var(--kmcb-line);
+	border-radius: 999px;
+	cursor: pointer;
+}
+
+.kmcb-mobile-filters svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* ------------------------------------------------------------------- Layout */
+
+.kmcb-body {
+	display: grid;
+	grid-template-columns: var(--kmcb-sidebar-w) minmax(0, 1fr);
+	gap: var(--kmcb-sidebar-gap);
+	align-items: stretch;
+	padding-top: 34px;
+}
+
+.kmcb-sidebar {
+	min-width: 0;
+}
+
+.kmcb-sidebar .kmcb-filters {
+	height: 100%;
+}
+
+.kmcb--no-sidebar .kmcb-body {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.kmcb-content {
+	min-width: 0;
+	transition: opacity 0.18s ease;
+}
+
+.kmcb.is-loading .kmcb-content {
+	opacity: 0.45;
+	pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ Sidebar */
+
+.kmcb-filters {
+	background: var(--kmcb-panel-bg);
+	border-radius: var(--kmcb-panel-radius);
+	padding: var(--kmcb-panel-pad-y) var(--kmcb-panel-pad-x);
+}
+
+.kmcb-filters-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 10px;
+	padding-bottom: 18px;
+	margin-bottom: 6px;
+	border-bottom: 1px solid var(--kmcb-opt-line);
+}
+
+.kmcb-filters-title {
+	font-size: calc(16px * var(--kmcb-fs));
+	font-weight: 700;
+	color: var(--kmcb-filters-title);
+}
+
+.kmcb-clear {
+	font-size: calc(13px * var(--kmcb-fs));
+	color: var(--kmcb-clear-color);
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.kmcb-clear:hover {
+	color: var(--kmcb-ink);
+	text-decoration: underline;
+}
+
+.kmcb-clear.is-disabled {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+.kmcb-group {
+	padding: 20px 0 0;
+}
+
+.kmcb-group:first-of-type {
+	padding-top: 16px;
+}
+
+.kmcb-group-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	padding: 0 0 10px;
+	border: 0;
+	background: transparent;
+	font-size: calc(12px * var(--kmcb-fs));
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--kmcb-group-color);
+	cursor: pointer;
+	text-align: left;
+}
+
+.kmcb-group-head--static {
+	cursor: default;
+}
+
+.kmcb-toggle {
+	position: relative;
+	width: 11px;
+	height: 11px;
+	flex: none;
+}
+
+.kmcb-toggle::before,
+.kmcb-toggle::after {
+	content: '';
+	position: absolute;
+	background: currentColor;
+}
+
+.kmcb-toggle::before {
+	top: 50%;
+	left: 0;
+	right: 0;
+	height: 1.5px;
+	margin-top: -0.75px;
+}
+
+.kmcb-toggle::after {
+	left: 50%;
+	top: 0;
+	bottom: 0;
+	width: 1.5px;
+	margin-left: -0.75px;
+	transition: transform 0.2s ease;
+}
+
+.kmcb-group.is-open .kmcb-toggle::after {
+	transform: scaleY(0);
+}
+
+.kmcb-group-body {
+	display: none;
+}
+
+.kmcb-group.is-open .kmcb-group-body {
+	display: block;
+}
+
+.kmcb-opt {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 13px 0;
+	border-bottom: 1px solid var(--kmcb-opt-line);
+	cursor: pointer;
+	transition: opacity 0.15s ease;
+}
+
+.kmcb-opt:hover .kmcb-opt-name {
+	opacity: 0.7;
+}
+
+.kmcb-opt.is-empty {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+.kmcb-opt-input {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+	margin: 0;
+}
+
+.kmcb-opt-text {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+	flex: 1;
+}
+
+.kmcb-opt-name {
+	font-size: calc(15px * var(--kmcb-fs));
+	font-weight: 500;
+	color: var(--kmcb-option-color);
+	line-height: 1.25;
+}
+
+.kmcb-opt-sub {
+	font-size: calc(12px * var(--kmcb-fs));
+	color: var(--kmcb-option-sub-color);
+	line-height: 1.2;
+}
+
+.kmcb-opt-count {
+	font-size: calc(12px * var(--kmcb-fs));
+	color: var(--kmcb-muted);
+}
+
+.kmcb-opt-mark {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 19px;
+	height: 19px;
+	flex: none;
+	border: 1px solid var(--kmcb-check-border);
+	border-radius: 50%;
+	background: #fff;
+	color: transparent;
+	transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.kmcb-opt-mark svg {
+	width: 11px;
+	height: 11px;
+}
+
+.kmcb-opt-input:checked ~ .kmcb-opt-mark {
+	background: var(--kmcb-check-bg);
+	border-color: var(--kmcb-check-bg);
+	color: var(--kmcb-check-tick);
+}
+
+.kmcb-opt-input:focus-visible ~ .kmcb-opt-mark {
+	outline: 2px solid var(--kmcb-accent);
+	outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------- Grid */
+
+.kmcb-grid {
+	display: grid;
+	gap: var(--kmcb-gap-y) var(--kmcb-gap-x);
+}
+
+.kmcb-grid--grid {
+	grid-template-columns: repeat(var(--kmcb-cols), minmax(0, 1fr));
+}
+
+.kmcb-grid--list {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 18px;
+}
+
+.kmcb-card {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.kmcb-card-media {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 18px;
+	border-radius: var(--kmcb-card-radius);
+	background: var(--kmcb-card-bg);
+	overflow: hidden;
+	aspect-ratio: 1 / var(--kmcb-card-ratio);
+}
+
+.kmcb-card-media--blend {
+	background-image: linear-gradient(
+		var(--kmcb-blend-angle),
+		var(--kmcb-card-bg) 0%,
+		var(--kmcb-card-bg-2, var(--kmcb-card-bg)) 100%
+	);
+}
+
+/*
+ * The curved band of the second colour along the bottom of the card. On hover
+ * it grows past the top edge and flattens, so the card fills with the second
+ * colour. Inset horizontally so the ellipse's edges stay off-screen.
+ */
+.kmcb-card-wave {
+	position: absolute;
+	left: -12%;
+	right: -12%;
+	bottom: 0;
+	height: var(--kmcb-wave-h);
+	background: var(--kmcb-card-bg-2, var(--kmcb-card-bg));
+	border-radius: 50% 50% 0 0 / var(--kmcb-wave-curve) var(--kmcb-wave-curve) 0 0;
+	transition: height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+		border-radius 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+	pointer-events: none;
+}
+
+.kmcb-card:hover .kmcb-card-wave,
+.kmcb-card:focus-within .kmcb-card-wave {
+	height: 130%;
+	border-radius: 0;
+}
+
+.kmcb-card-media img,
+.kmcb-card-media .kmcb-card-img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	margin: 0;
+	position: relative;
+	z-index: 1;
+	transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kmcb-card:hover .kmcb-card-media img,
+.kmcb-card:focus-within .kmcb-card-media img {
+	transform: scale(var(--kmcb-img-zoom));
+}
+
+.kmcb-badge {
+	position: absolute;
+	z-index: 2;
+	top: 12px;
+	right: 12px;
+	padding: 5px 12px;
+	font-size: calc(12px * var(--kmcb-fs));
+	font-weight: 600;
+	line-height: 1.4;
+	letter-spacing: 0.02em;
+	color: var(--kmcb-badge-color);
+	background: var(--kmcb-badge-bg);
+	border-radius: 999px;
+	white-space: nowrap;
+}
+
+.kmcb-card-body {
+	padding-top: 13px;
+}
+
+.kmcb .kmcb-eyebrow {
+	font-family: inherit;
+	margin: 0 0 4px;
+	font-size: calc(12px * var(--kmcb-fs));
+	font-weight: 600;
+	letter-spacing: 0.11em;
+	text-transform: uppercase;
+	color: var(--kmcb-muted);
+}
+
+.kmcb .kmcb-title {
+	font-family: inherit;
+	margin: 0 0 6px;
+	font-size: calc(19px * var(--kmcb-fs));
+	font-weight: 700;
+	line-height: 1.25;
+}
+
+.kmcb-title a {
+	color: var(--kmcb-ink);
+	text-decoration: none;
+	transition: opacity 0.15s ease;
+}
+
+.kmcb-title a:hover,
+.kmcb-title a:focus-visible {
+	opacity: 0.7;
+}
+
+.kmcb .kmcb-price {
+	font-family: inherit;
+	margin: 0 0 6px;
+	font-size: calc(15px * var(--kmcb-fs));
+	color: var(--kmcb-ink);
+}
+
+.kmcb-price del {
+	color: var(--kmcb-muted);
+	margin-right: 5px;
+}
+
+.kmcb .kmcb-more {
+	font-family: inherit;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: calc(14px * var(--kmcb-fs));
+	font-weight: 600;
+	color: var(--kmcb-accent);
+	text-decoration: none;
+}
+
+.kmcb-more svg {
+	width: 12px;
+	height: 9px;
+	transition: transform 0.2s ease;
+}
+
+.kmcb-more:hover svg {
+	transform: translateX(3px);
+}
+
+/* The same arrow, mirrored. Its nudge on hover is written after the
+   mirror so it still travels the way the arrow points. */
+.kmcb-more--left svg {
+	transform: scaleX(-1);
+}
+
+.kmcb-more--left:hover svg {
+	transform: scaleX(-1) translateX(3px);
+}
+
+/* List view */
+
+.kmcb-grid--list .kmcb-card {
+	flex-direction: row;
+	align-items: center;
+	gap: 20px;
+	padding-bottom: 18px;
+	border-bottom: 1px solid var(--kmcb-line);
+}
+
+.kmcb-grid--list .kmcb-card-media {
+	width: 150px;
+	flex: none;
+	aspect-ratio: 1 / 1;
+}
+
+.kmcb-grid--list .kmcb-card-body {
+	padding-top: 0;
+}
+
+/* -------------------------------------------------------- Empty + paginate */
+
+.kmcb-empty {
+	padding: 60px 20px;
+	text-align: center;
+}
+
+.kmcb-empty-title {
+	margin: 0 0 10px;
+	font-size: calc(16px * var(--kmcb-fs));
+	font-weight: 600;
+	color: var(--kmcb-ink);
+}
+
+.kmcb-empty-reset {
+	font-size: 12px;
+	color: var(--kmcb-accent);
+}
+
+.kmcb-debug {
+	max-width: 720px;
+	margin: 28px auto 0;
+	padding: 16px 18px;
+	text-align: left;
+	background: #fff8e5;
+	border: 1px solid #f0d9a0;
+	border-radius: 10px;
+	font-size: 12px;
+	color: #6b5a2a;
+}
+
+.kmcb-debug-title {
+	margin: 0 0 8px;
+	font-weight: 700;
+}
+
+.kmcb-debug table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 12px;
+}
+
+.kmcb-debug th,
+.kmcb-debug td {
+	padding: 4px 6px;
+	text-align: left;
+	vertical-align: top;
+	border-bottom: 1px solid #f0e3c2;
+}
+
+.kmcb-debug th {
+	width: 45%;
+	font-weight: 600;
+}
+
+.kmcb-debug pre {
+	margin: 0;
+	padding: 10px;
+	overflow-x: auto;
+	background: #fffdf7;
+	border: 1px solid #f0e3c2;
+	border-radius: 6px;
+	font-size: 11px;
+	line-height: 1.5;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.kmcb-pagination {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 8px;
+	margin-top: 36px;
+}
+
+.kmcb-load-more {
+	height: 40px;
+	padding: 0 28px;
+	font-size: calc(13px * var(--kmcb-fs));
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--kmcb-ink);
+	background: transparent;
+	border: 1px solid var(--kmcb-ink);
+	border-radius: 999px;
+	cursor: pointer;
+	transition: background 0.15s ease, color 0.15s ease;
+}
+
+.kmcb-load-more:hover {
+	background: var(--kmcb-ink);
+	color: #fff;
+}
+
+.kmcb-load-more[disabled] {
+	opacity: 0.4;
+	cursor: default;
+}
+
+.kmcb-page {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 32px;
+	height: 32px;
+	padding: 0 8px;
+	font-size: calc(13px * var(--kmcb-fs));
+	color: var(--kmcb-ink);
+	text-decoration: none;
+	border-radius: 8px;
+}
+
+.kmcb-page.is-active {
+	background: var(--kmcb-ink);
+	color: #fff;
+}
+
+.kmcb-apply {
+	margin-top: 16px;
+	padding: 10px 22px;
+	cursor: pointer;
+}
+
+/* --------------------------------------------------------------- Responsive */
+
+@media (max-width: 1024px) {
+	/*
+	 * Every placement collapses to a single column here. The off-centre
+	 * variants are flex rather than grid, so grid-template-columns alone would
+	 * leave them wrapping into a cramped row.
+	 */
+	.kmcb-toolbar,
+	.kmcb-toolbar--search-start,
+	.kmcb-toolbar--search-end {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 14px;
+	}
+
+	.kmcb-toolbar .kmcb-search,
+	.kmcb-toolbar--search-start .kmcb-search,
+	.kmcb-toolbar--search-end .kmcb-search {
+		order: 1;
+		width: 100%;
+		max-width: none;
+		margin: 0;
+		justify-self: stretch;
+	}
+
+	.kmcb-toolbar .kmcb-toolbar-start,
+	.kmcb-toolbar--search-start .kmcb-toolbar-start,
+	.kmcb-toolbar--search-end .kmcb-toolbar-start {
+		order: 2;
+	}
+
+	.kmcb-toolbar .kmcb-toolbar-end,
+	.kmcb-toolbar--search-start .kmcb-toolbar-end,
+	.kmcb-toolbar--search-end .kmcb-toolbar-end {
+		order: 3;
+		width: 100%;
+		margin-left: 0;
+		justify-content: flex-start;
+		flex-wrap: wrap;
+	}
+
+	.kmcb-tabs {
+		margin-bottom: 0;
+	}
+}
+
+@media (max-width: 767px) {
+	.kmcb-mobile-filters {
+		display: inline-flex;
+	}
+
+	.kmcb-body {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.kmcb--has-sidebar .kmcb-sidebar {
+		display: none;
+	}
+
+	.kmcb--has-sidebar.is-filters-open .kmcb-sidebar {
+		display: block;
+	}
+
+	.kmcb-toolbar-end {
+		width: 100%;
+		justify-content: space-between;
+		gap: 10px;
+	}
+
+	.kmcb-toolbar-rule {
+		display: none;
+	}
+
+	/*
+	 * A single column on phones unless the widget says otherwise. Set as the
+	 * variable, not the grid property, so an explicit choice in Elementor still
+	 * wins on the strength of its own selector.
+	 */
+	.kmcb {
+		--kmcb-cols: 1;
+	}
+
+	/* These must never wrap onto two lines inside the row. */
+	.kmcb-mobile-filters,
+	.kmcb-count,
+	.kmcb-sort,
+	.kmcb-sort-label {
+		white-space: nowrap;
+		flex: none;
+	}
+
+	.kmcb-sort-select {
+		max-width: 120px;
+	}
+
+	.kmcb-tabs {
+		width: 100%;
+		gap: 18px;
+		overflow-x: auto;
+	}
+
+	.kmcb-grid--list .kmcb-card {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.kmcb-grid--list .kmcb-card-media {
+		width: 100%;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.kmcb *,
+	.kmcb *::before,
+	.kmcb *::after {
+		transition-duration: 0.01ms !important;
+	}
+
+	.kmcb-card:hover .kmcb-card-media img,
+	.kmcb-card:focus-within .kmcb-card-media img {
+		transform: none;
+	}
+}
+
+/* ============================================================ Product gallery
+ *
+ * Single-product companion to the grid card: the same two product colours and
+ * the same curved wave, so the product page matches its card.
+ */
+
+.kmcb-gallery {
+	--kmcb-gallery-radius: 18px;
+	--kmcb-gallery-ratio: 1;
+	--kmcb-thumb-size: 92px;
+	--kmcb-thumb-gap: 12px;
+	--kmcb-thumb-radius: 10px;
+	--kmcb-thumb-active: #2c2c2c;
+	--kmcb-thumb-active-w: 2px;
+
+	--kmcb-card-bg: #f3f1ec;
+	--kmcb-wave-h: 34%;
+	--kmcb-wave-curve: 26%;
+
+	display: flex;
+	flex-direction: column;
+	gap: var(--kmcb-thumb-gap);
+}
+
+.kmcb-gallery *,
+.kmcb-gallery *::before,
+.kmcb-gallery *::after {
+	box-sizing: border-box;
+}
+
+.kmcb-gallery--thumbs-left {
+	flex-direction: row-reverse;
+	align-items: flex-start;
+}
+
+.kmcb-gallery-main {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
+	min-width: 0;
+	padding: 40px;
+	border-radius: var(--kmcb-gallery-radius);
+	background: var(--kmcb-card-bg);
+	overflow: hidden;
+	aspect-ratio: 1 / var(--kmcb-gallery-ratio);
+}
+
+.kmcb-gallery-img {
+	position: relative;
+	z-index: 1;
+	display: block;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	object-fit: contain;
+}
+
+/* Thumbnails */
+
+.kmcb-gallery-thumbs {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: var(--kmcb-thumb-gap);
+}
+
+.kmcb-gallery--thumbs-left .kmcb-gallery-thumbs {
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	flex: none;
+}
+
+.kmcb-gallery-thumb {
+	position: relative;
+	width: var(--kmcb-thumb-size);
+	height: var(--kmcb-thumb-size);
+	flex: none;
+	padding: 8px;
+	border: var(--kmcb-thumb-active-w) solid transparent;
+	border-radius: var(--kmcb-thumb-radius);
+	background: var(--kmcb-card-bg);
+	cursor: pointer;
+	overflow: hidden;
+	transition: border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.kmcb-gallery-thumb:hover {
+	opacity: 0.85;
+}
+
+.kmcb-gallery-thumb.is-active {
+	border-color: var(--kmcb-thumb-active);
+}
+
+.kmcb-gallery-thumb:focus-visible {
+	outline: 2px solid var(--kmcb-thumb-active);
+	outline-offset: 2px;
+}
+
+.kmcb-gallery-thumb-img {
+	position: relative;
+	z-index: 1;
+	display: block;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	object-fit: contain;
+}
+
+/* The thumbnails carry the same two colours as the main image. */
+.kmcb-gallery-thumb .kmcb-card-wave {
+	transition: none;
+}
+
+@media (max-width: 767px) {
+	.kmcb-gallery--thumbs-left {
+		flex-direction: column;
+	}
+
+	.kmcb-gallery--thumbs-left .kmcb-gallery-thumbs {
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+}
+
+/* ========================================================== Product accordion */
+
+.kmcb-accordion {
+	--kmcb-acc-bg: #fff;
+	--kmcb-acc-line: #e6e6e6;
+	--kmcb-acc-radius: 12px;
+	--kmcb-acc-title: #2c2c2c;
+	--kmcb-acc-body: inherit;
+	--kmcb-acc-gap: 14px;
+	--kmcb-acc-outer-radius: var(--kmcb-acc-radius);
+	--kmcb-acc-outer-bg: transparent;
+	--kmcb-acc-outer-line: transparent;
+	--kmcb-acc-outer-bw: 0px;
+	--kmcb-acc-outer-pad: 0px;
+	--kmcb-acc-open-border: #2c2c2c;
+	--kmcb-acc-icon-bg: #2c2c2c;
+	--kmcb-acc-icon-color: #fff;
+	--kmcb-acc-head-bg: transparent;
+	--kmcb-acc-open-bg: #e2f4fd;
+	--kmcb-acc-open-body-bg: #fff;
+	--kmcb-acc-open-title: var(--kmcb-acc-title);
+
+	background: var(--kmcb-acc-bg);
+	border: 1px solid var(--kmcb-acc-line);
+	border-radius: var(--kmcb-acc-outer-radius);
+	overflow: hidden;
+}
+
+.kmcb-accordion *,
+.kmcb-accordion *::before,
+.kmcb-accordion *::after {
+	box-sizing: border-box;
+}
+
+.kmcb-accordion--joined .kmcb-acc-item + .kmcb-acc-item {
+	border-top: 1px solid var(--kmcb-acc-line);
+}
+
+.kmcb-accordion--cards {
+	display: flex;
+	flex-direction: column;
+	gap: var(--kmcb-acc-gap);
+	background: var(--kmcb-acc-outer-bg);
+	border: var(--kmcb-acc-outer-bw) solid var(--kmcb-acc-outer-line);
+	border-radius: var(--kmcb-acc-outer-radius);
+	padding: var(--kmcb-acc-outer-pad);
+	overflow: visible;
+}
+
+.kmcb-accordion--cards .kmcb-acc-item {
+	background: var(--kmcb-acc-bg);
+	border: 1px solid var(--kmcb-acc-line);
+	border-radius: var(--kmcb-acc-radius);
+	overflow: hidden;
+	transition: border-color 0.2s ease;
+}
+
+.kmcb-accordion--cards .kmcb-acc-item.is-open {
+	border-color: var(--kmcb-acc-open-border);
+}
+
+/* Round toggle, filled once the panel is open. */
+.kmcb-acc-icon-wrap {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	flex: none;
+	border-radius: 50%;
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.kmcb-accordion--icon-circle .kmcb-acc-item.is-open .kmcb-acc-icon-wrap {
+	background: var(--kmcb-acc-icon-bg);
+	color: var(--kmcb-acc-icon-color);
+}
+
+.kmcb-accordion--icon-plain .kmcb-acc-icon-wrap {
+	width: auto;
+	height: auto;
+}
+
+.kmcb-acc-heading {
+	margin: 0;
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+}
+
+.kmcb-acc-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	width: 100%;
+	padding: 18px 20px;
+	border: 0;
+	background: var(--kmcb-acc-head-bg);
+	/* A button's text does not inherit alignment, so it has to be set. Start
+	   rather than left, or an Arabic question's last line flushes to the
+	   wrong edge. The widget can override it. */
+	text-align: var(--kmcb-acc-align, start);
+	cursor: pointer;
+	color: var(--kmcb-acc-title);
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.kmcb-acc-title {
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--kmcb-acc-title);
+	flex: 1;
+	min-width: 0;
+}
+
+.kmcb-acc-icon {
+	width: 14px;
+	height: 14px;
+	flex: none;
+	transition: transform 0.25s ease;
+}
+
+.kmcb-acc-item.is-open .kmcb-acc-icon {
+	transform: rotate(180deg);
+}
+
+/* Open panel. */
+
+.kmcb-acc-item.is-open .kmcb-acc-head {
+	background: var(--kmcb-acc-open-bg);
+	color: var(--kmcb-acc-open-title);
+}
+
+.kmcb-acc-item.is-open .kmcb-acc-title {
+	color: var(--kmcb-acc-open-title);
+}
+
+.kmcb-acc-item.is-open .kmcb-acc-body {
+	background: var(--kmcb-acc-open-body-bg);
+}
+
+.kmcb-acc-body {
+	/* The top was left to the first child's own margin, but that margin is
+	   stripped just below so the panel does not open with a ragged gap. With
+	   both gone the content sat against the header. */
+	padding: 18px 20px 20px;
+	color: var(--kmcb-acc-body);
+}
+
+.kmcb-acc-body[hidden] {
+	display: none;
+}
+
+.kmcb-acc-content > *:first-child {
+	margin-top: 0;
+}
+
+.kmcb-acc-content > *:last-child {
+	margin-bottom: 0;
+}
+
+.kmcb-acc-content table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 0 0 12px;
+}
+
+.kmcb-acc-content th,
+.kmcb-acc-content td {
+	padding: 8px 10px;
+	text-align: start;
+	vertical-align: top;
+	border-bottom: 1px solid var(--kmcb-acc-line);
+}
+
+.kmcb-acc-content th {
+	font-weight: 600;
+}
+
+/* The line under the whole accordion, e.g. "For Animal Use." */
+
+.kmcb-acc-note {
+	margin: 18px 0 0;
+	font-family: var(--kmcb-acc-note-font, "Noto Sans Arabic", "Noto Naskh Arabic", "Segoe UI", Tahoma, sans-serif);
+	font-size: calc(13px * var(--kmcb-fs, 1));
+	line-height: 1.6;
+	color: var(--kmcb-muted, #6b6b6b);
+	text-align: start;
+}
+
+.kmcb-acc-note > *:first-child {
+	margin-top: 0;
+}
+
+.kmcb-acc-note > *:last-child {
+	margin-bottom: 0;
+}
+
+/*
+ * The note is set in Noto Sans Arabic on every page, English and Arabic, as
+ * the client asked. The plugin loads the family itself, with the accordion,
+ * so it never falls back to whatever the browser has. The rule is on the note
+ * alone, one class deep, so a font chosen in Elementor, which targets the note
+ * with the widget's own class in front, still wins.
+ */
+
+/* A two column label and value table: the label column takes a fixed share
+   so the values line up down the page. Only row headers, because giving
+   every header 45% leaves the third column of a wider table almost nothing
+   and it wraps a word at a time. */
+.kmcb-acc-content th[scope="row"] {
+	width: 45%;
+}
+
+/* Column headings are left to size themselves. Forcing them not to wrap
+   pushes a three column table wider than the panel it sits in. */
+
+/* ============================================================= Product button */
+
+.kmcb-btn-wrap {
+	display: flex;
+}
+
+.kmcb-btn {
+	--kmcb-btn-bg: #2c2c2c;
+	--kmcb-btn-bg-hover: #111111;
+	--kmcb-btn-color: #fff;
+
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	padding: 18px 32px;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-align: center;
+	text-decoration: none;
+	color: var(--kmcb-btn-color);
+	background: var(--kmcb-btn-bg);
+	border: 0;
+	border-radius: 30px;
+	cursor: pointer;
+	transition: background 0.2s ease;
+}
+
+.kmcb-btn--full {
+	width: 100%;
+}
+
+/* The waiting state: the same button, but nothing happens when it is pressed,
+   so it says so by being quiet rather than inviting. */
+.kmcb-btn--soon {
+	--kmcb-btn-bg: #e8e8e4;
+	--kmcb-btn-color: #6b6b6b;
+
+	cursor: default;
+}
+
+a.kmcb-btn:hover,
+a.kmcb-btn:focus-visible {
+	background: var(--kmcb-btn-bg-hover);
+	color: var(--kmcb-btn-color-hover, var(--kmcb-btn-color));
+}
+
+.kmcb-btn-arrow {
+	width: 15px;
+	height: 11px;
+	flex: none;
+	transition: transform 0.2s ease;
+}
+
+a.kmcb-btn:hover .kmcb-btn-arrow {
+	transform: translateX(3px);
+}
+
+/* The same arrow, mirrored. Its nudge on hover is written after the
+   mirror so it still travels the way the arrow points. */
+.kmcb-btn-arrow--left {
+	transform: scaleX(-1);
+}
+
+a.kmcb-btn:hover .kmcb-btn-arrow--left {
+	transform: scaleX(-1) translateX(3px);
+}
+
+/* ========================================================= Related products */
+
+.kmcb-related {
+	--kmcb-card-ratio: 0.78;
+}
+
+.kmcb-related-heading {
+	margin: 0 0 28px;
+	font-size: calc(28px * var(--kmcb-fs));
+	font-weight: 700;
+	line-height: 1.2;
+	color: #2c2c2c;
+}
+
+/* ======================================================== Product description */
+
+.kmcb-description > *:first-child {
+	margin-top: 0;
+}
+
+.kmcb-description > *:last-child {
+	margin-bottom: 0;
+}
+
+/* ======================================================= Product variations */
+
+.kmcb-variations {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.kmcb-var-label {
+	margin: 0 0 10px;
+	font-size: calc(14px * var(--kmcb-fs, 1));
+	font-weight: 700;
+	line-height: 1.3;
+	color: #2c2c2c;
+	text-align: start;
+}
+
+.kmcb-var-options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.kmcb-var-box {
+	min-width: 84px;
+	margin: 0;
+	padding: 10px 20px;
+	border: 1.5px solid #dfe5da;
+	border-radius: 14px;
+	background: #fff;
+	color: #2c2c2c;
+	font: inherit;
+	font-size: calc(15px * var(--kmcb-fs, 1));
+	font-weight: 600;
+	line-height: 1.2;
+	text-align: center;
+	cursor: pointer;
+	transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.kmcb-var-box:hover {
+	border-color: #2c2c2c;
+}
+
+.kmcb-var-box.is-active {
+	border-color: #2c2c2c;
+	background: #2c2c2c;
+	color: #fff;
+}
+
+.kmcb-var-box:focus-visible {
+	outline: 2px solid #2c2c2c;
+	outline-offset: 2px;
+}
+
+.kmcb-var-box.is-unavailable {
+	opacity: 0.4;
+	text-decoration: line-through;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.kmcb-var-box {
+		transition: none;
+	}
+}
+
+/* ======================================================= Product term line */
+
+.kmcb-term-line {
+	margin: 0 0 6px;
+	font-size: calc(13px * var(--kmcb-fs, 1));
+	font-weight: 700;
+	line-height: 1.3;
+	color: #2c2c2c;
+}
+
+.kmcb-term-line a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.kmcb-term-line a:hover {
+	opacity: 0.7;
+}
+
+/* ========================================================= Segmented switcher */
+
+.kmcb-switch-wrap {
+	display: flex;
+}
+
+.kmcb-switch {
+	--kmcb-switch-bg: #fff;
+	--kmcb-switch-border: #e6e6e6;
+	--kmcb-switch-color: #2c2c2c;
+	--kmcb-switch-active-bg: #2c2c2c;
+	--kmcb-switch-active-color: #fff;
+	--kmcb-switch-h: 48px;
+	--kmcb-switch-radius: 30px;
+
+	display: flex;
+	max-width: 100%;
+	background: var(--kmcb-switch-bg);
+	border: 1px solid var(--kmcb-switch-border);
+	border-radius: var(--kmcb-switch-radius);
+	overflow: hidden;
+}
+
+.kmcb-switch-item {
+	display: inline-flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--kmcb-switch-h);
+	padding: 0 24px;
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	text-align: center;
+	text-decoration: none;
+	color: var(--kmcb-switch-color);
+	transition: background 0.2s ease, color 0.2s ease;
+
+	/*
+	 * Square by default. Only the outer corners are rounded, so the selected
+	 * half fills its side of the track and meets the other half on a straight
+	 * edge, instead of floating inside as a smaller pill.
+	 */
+	border-radius: 0;
+}
+
+.kmcb-switch-item:first-child {
+	border-radius: var(--kmcb-switch-radius) 0 0 var(--kmcb-switch-radius);
+}
+
+.kmcb-switch-item:last-child {
+	border-radius: 0 var(--kmcb-switch-radius) var(--kmcb-switch-radius) 0;
+}
+
+.kmcb-switch-item:only-child {
+	border-radius: var(--kmcb-switch-radius);
+}
+
+.kmcb-switch-item:hover {
+	color: var(--kmcb-switch-color);
+	opacity: 0.75;
+}
+
+.kmcb-switch-item.is-active,
+.kmcb-switch-item.is-active:hover {
+	background: var(--kmcb-switch-active-bg);
+	color: var(--kmcb-switch-active-color);
+	opacity: 1;
+}
+
+/* ============================================================== Feature list */
+
+.kmcb-features {
+	--kmcb-feat-cols: 1;
+	--kmcb-feat-icon: 44px;
+	--kmcb-feat-gap: 18px;
+	--kmcb-feat-row-gap: 34px;
+
+	display: grid;
+	grid-template-columns: repeat(var(--kmcb-feat-cols), minmax(0, 1fr));
+	gap: var(--kmcb-feat-row-gap) var(--kmcb-feat-gap);
+}
+
+.kmcb-feature {
+	display: flex;
+	gap: var(--kmcb-feat-gap);
+	align-items: flex-start;
+}
+
+.kmcb-features--icon-top .kmcb-feature {
+	flex-direction: column;
+}
+
+.kmcb-feature-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--kmcb-feat-icon);
+	height: var(--kmcb-feat-icon);
+	flex: none;
+	color: #2c2c2c;
+}
+
+.kmcb-feature-icon svg,
+.kmcb-feature-icon img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.kmcb-feature-icon i {
+	font-size: calc(var(--kmcb-feat-icon) * 0.8);
+	line-height: 1;
+}
+
+.kmcb-feature-body {
+	min-width: 0;
+}
+
+.kmcb-feature-title {
+	margin: 0 0 6px;
+	font-size: 17px;
+	font-weight: 700;
+	line-height: 1.3;
+	color: #2c2c2c;
+}
+
+.kmcb-feature-text {
+	margin: 0;
+	font-size: 15px;
+	line-height: 1.5;
+	color: #5b6b52;
+}
+
+/* =================================================================== Marquee */
+
+.kmcb-marquee {
+	--kmcb-mq-bg: #2c2c2c;
+	--kmcb-mq-color: #fff;
+	--kmcb-mq-gap: 60px;
+	--kmcb-mq-duration: 30s;
+	--kmcb-mq-img-h: 34px;
+
+	overflow: hidden;
+	padding: 14px 0;
+	background: var(--kmcb-mq-bg);
+
+	/* The track is twice the band's width and overflows it, and the loop
+	   works by shifting it half its width. That relies on the track
+	   hanging off the right. On a right-to-left page it anchors to the
+	   right instead and hangs off the left, so the same shift walks it
+	   out of the band and leaves empty space behind it.
+
+	   Every item in the track is the same one repeated, so their order
+	   carries no meaning and the band can simply be pinned left-to-right.
+	   The item below puts the page's own direction back for its text. */
+	direction: ltr;
+}
+
+[dir="rtl"] .kmcb-marquee-item,
+.rtl .kmcb-marquee-item {
+	direction: rtl;
+}
+
+.kmcb-marquee-track {
+	display: flex;
+	align-items: center;
+	gap: var(--kmcb-mq-gap);
+	width: max-content;
+	padding-right: var(--kmcb-mq-gap);
+	animation: kmcb-marquee var(--kmcb-mq-duration) linear infinite;
+}
+
+.kmcb-marquee--reverse .kmcb-marquee-track {
+	animation-direction: reverse;
+}
+
+.kmcb-marquee--pause:hover .kmcb-marquee-track {
+	animation-play-state: paused;
+}
+
+.kmcb-marquee-item {
+	display: inline-flex;
+	align-items: center;
+	flex: none;
+	color: var(--kmcb-mq-color);
+	font-size: 22px;
+	font-weight: 700;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.kmcb-marquee-item img {
+	display: block;
+	height: var(--kmcb-mq-img-h);
+	width: auto;
+}
+
+@keyframes kmcb-marquee {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.kmcb-marquee-track {
+		animation: none;
+	}
+}
+
+/* =============================================================== Shape image */
+
+.kmcb-shape-wrap {
+	display: flex;
+}
+
+.kmcb-shape {
+	--kmcb-shape-ratio: 1;
+	--kmcb-shape-bg: #5b2e2e;
+	--kmcb-shape-x: 12px;
+	--kmcb-shape-y: 12px;
+	--kmcb-shape-rot: 0deg;
+
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1 / var(--kmcb-shape-ratio);
+	transform: rotate(var(--kmcb-shape-rot));
+}
+
+/* The offset silhouette sitting behind the photo. */
+.kmcb-shape-back {
+	position: absolute;
+	inset: 0;
+	background: var(--kmcb-shape-bg);
+	transform: translate(var(--kmcb-shape-x), var(--kmcb-shape-y));
+	-webkit-mask: var(--kmcb-shape-mask) center / contain no-repeat;
+	mask: var(--kmcb-shape-mask) center / contain no-repeat;
+}
+
+.kmcb-shape-img {
+	position: relative;
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	-webkit-mask: var(--kmcb-shape-mask) center / contain no-repeat;
+	mask: var(--kmcb-shape-mask) center / contain no-repeat;
+}
+
+.kmcb-shape--paw {
+	--kmcb-shape-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23000'%3E%3Ccircle cx='27' cy='24' r='17'/%3E%3Ccircle cx='63' cy='19' r='16'/%3E%3Ccircle cx='88' cy='45' r='13'/%3E%3Ccircle cx='12' cy='55' r='13'/%3E%3Cellipse cx='52' cy='69' rx='33' ry='29'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.kmcb-shape--blob {
+	--kmcb-shape-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23000' d='M52 2c19 0 33 9 40 24s5 33-4 46-24 24-41 22S16 82 8 68-1 36 9 23 33 2 52 2z'/%3E%3C/svg%3E");
+}
+
+.kmcb-shape--flower {
+	--kmcb-shape-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23000'%3E%3Ccircle cx='50' cy='26' r='24'/%3E%3Ccircle cx='26' cy='44' r='24'/%3E%3Ccircle cx='74' cy='44' r='24'/%3E%3Ccircle cx='36' cy='72' r='24'/%3E%3Ccircle cx='64' cy='72' r='24'/%3E%3Ccircle cx='50' cy='52' r='26'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.kmcb-shape--circle {
+	--kmcb-shape-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000'/%3E%3C/svg%3E");
+}
+
+.kmcb-shape--squircle {
+	--kmcb-shape-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='28' fill='%23000'/%3E%3C/svg%3E");
+}
+
+/* ============================================================ Shape divider */
+
+.kmcb-divider {
+	--kmcb-div-color: #fff;
+	--kmcb-div-h: 28px;
+	--kmcb-div-tile: 64px;
+
+	position: relative;
+	width: 100%;
+	height: var(--kmcb-div-h);
+	background: var(--kmcb-div-color);
+	-webkit-mask-repeat: repeat-x;
+	mask-repeat: repeat-x;
+	-webkit-mask-size: var(--kmcb-div-tile) 100%;
+	mask-size: var(--kmcb-div-tile) 100%;
+	-webkit-mask-position: center;
+	mask-position: center;
+}
+
+.kmcb-divider--flip {
+	transform: scaleX(-1);
+}
+
+/* Pulled onto the edge of whichever container it sits in. */
+.kmcb-divider--at-top {
+	margin-top: calc(var(--kmcb-div-h) * -1);
+}
+
+.kmcb-divider--at-bottom {
+	margin-bottom: calc(var(--kmcb-div-h) * -1);
+}
+
+.kmcb-divider--scallop-up {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 A10 10 0 0 1 20 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 A10 10 0 0 1 20 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+.kmcb-divider--scallop-down {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H20 V10 A10 10 0 0 1 0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H20 V10 A10 10 0 0 1 0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+.kmcb-divider--wave {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 Q10 0 20 10 T40 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 Q10 0 20 10 T40 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+/* ==================================================================== Navbar */
+
+.kmcb-nav {
+	--kmcb-nav-bg: #fff;
+	--kmcb-nav-radius: 44px;
+	--kmcb-nav-color: #4a4a4a;
+	--kmcb-nav-hover: #2c2c2c;
+	--kmcb-nav-active: #2c2c2c;
+	--kmcb-nav-active-weight: 700;
+	--kmcb-nav-gap: 30px;
+	--kmcb-nav-logo-h: 38px;
+	--kmcb-nav-lang-color: #2c2c2c;
+	--kmcb-nav-lang-border: #2c2c2c;
+	--kmcb-nav-lang-bg: transparent;
+	--kmcb-nav-lang-hover-bg: #2c2c2c;
+	--kmcb-nav-lang-hover-color: #fff;
+	--kmcb-nav-lang-radius: 20px;
+	--kmcb-nav-toggle: #2c2c2c;
+	--kmcb-nav-break: 1024px;
+}
+
+/*
+ * Breathing room for a bar sitting in the flow. Deliberately on the widget and
+ * not on the header container: while the bar floats, container padding would
+ * reserve height and show as a band above the hero.
+ */
+.kmcb-nav:not(.kmcb-nav--overlay) {
+	padding: 20px 16px;
+}
+
+.kmcb-nav *,
+.kmcb-nav *::before,
+.kmcb-nav *::after {
+	box-sizing: border-box;
+}
+
+.kmcb-nav-inner {
+	display: flex;
+	align-items: center;
+	gap: 24px;
+	max-width: 1180px;
+	margin: 0 auto;
+	padding: 16px 34px;
+	background: var(--kmcb-nav-bg);
+	border-radius: var(--kmcb-nav-radius);
+}
+
+.kmcb-nav-logo {
+	display: inline-flex;
+	align-items: center;
+	flex: none;
+	text-decoration: none;
+	color: var(--kmcb-nav-active);
+	font-weight: 800;
+	font-size: 22px;
+}
+
+.kmcb-nav-logo img {
+	display: block;
+	height: var(--kmcb-nav-logo-h);
+	width: auto;
+	max-width: none;
+}
+
+/* Menu + language button share the middle, so the menu can sit centred. */
+.kmcb-nav-panel {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	gap: 24px;
+	min-width: 0;
+}
+
+.kmcb-nav-list {
+	display: flex;
+	align-items: center;
+	gap: var(--kmcb-nav-gap);
+	margin: 0 auto;
+	padding: 0;
+	list-style: none;
+	flex-wrap: wrap;
+}
+
+.kmcb-nav-list li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	position: relative;
+}
+
+.kmcb-nav-list a {
+	display: inline-block;
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 1.4;
+	text-decoration: none;
+	color: var(--kmcb-nav-color);
+	transition: color 0.15s ease;
+	white-space: nowrap;
+}
+
+.kmcb-nav-list a:hover,
+.kmcb-nav-list a:focus-visible {
+	color: var(--kmcb-nav-hover);
+}
+
+.kmcb-nav-list .current-menu-item > a,
+.kmcb-nav-list .current_page_item > a,
+.kmcb-nav-list .current-menu-ancestor > a,
+.kmcb-nav-list .current-menu-parent > a {
+	color: var(--kmcb-nav-active);
+	font-weight: var(--kmcb-nav-active-weight);
+}
+
+/* Second level */
+.kmcb-nav-list .sub-menu {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 20;
+	min-width: 190px;
+	margin: 10px 0 0;
+	padding: 10px 0;
+	list-style: none;
+	background: var(--kmcb-nav-bg);
+	border-radius: 14px;
+	box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+}
+
+.kmcb-nav-list li:hover > .sub-menu,
+.kmcb-nav-list li:focus-within > .sub-menu {
+	display: block;
+}
+
+.kmcb-nav-list .sub-menu a {
+	display: block;
+	padding: 8px 18px;
+	white-space: normal;
+}
+
+/* The language control, either a single button or a menu holding a
+   translation plugin's switcher. Both wear the same pill: only the
+   top level does, so a switcher's other languages drop down as plain
+   links rather than a stack of buttons. */
+.kmcb-nav-lang,
+.kmcb-nav-lang-list > li > a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	padding: 7px 18px;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.3;
+	text-decoration: none;
+	color: var(--kmcb-nav-lang-color);
+	background: var(--kmcb-nav-lang-bg);
+	border: 1px solid var(--kmcb-nav-lang-border);
+	border-radius: var(--kmcb-nav-lang-radius);
+	transition: background 0.18s ease, color 0.18s ease;
+}
+
+.kmcb-nav-lang:hover,
+.kmcb-nav-lang:focus-visible,
+.kmcb-nav-lang-list > li > a:hover,
+.kmcb-nav-lang-list > li > a:focus-visible {
+	background: var(--kmcb-nav-lang-hover-bg);
+	color: var(--kmcb-nav-lang-hover-color);
+}
+
+.kmcb-nav-lang-menu {
+	flex: none;
+}
+
+.kmcb-nav-lang-list {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.kmcb-nav-lang-list > li {
+	position: relative;
+}
+
+/* A flag image the switcher supplies, kept to the size of the text. */
+.kmcb-nav-lang-list a img {
+	display: inline-block;
+	width: auto;
+	height: 1em;
+	margin-inline-end: 6px;
+	vertical-align: -0.1em;
+}
+
+/* The remaining languages. Hung from the right, because the button sits
+   at the end of the bar and a left-aligned panel would run off screen. */
+.kmcb-nav-lang-list .sub-menu {
+	display: none;
+	position: absolute;
+	top: 100%;
+	right: 0;
+	left: auto;
+	z-index: 20;
+	min-width: 150px;
+	margin: 10px 0 0;
+	padding: 10px 0;
+	list-style: none;
+	background: var(--kmcb-nav-bg);
+	border-radius: 14px;
+	box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+}
+
+.kmcb-nav-lang-list li:hover > .sub-menu,
+.kmcb-nav-lang-list li:focus-within > .sub-menu {
+	display: block;
+}
+
+.kmcb-nav-lang-list .sub-menu a {
+	display: block;
+	padding: 8px 18px;
+	font-size: 13px;
+	white-space: nowrap;
+	text-decoration: none;
+	color: var(--kmcb-nav-color);
+}
+
+.kmcb-nav-lang-list .sub-menu a:hover,
+.kmcb-nav-lang-list .sub-menu a:focus-visible {
+	color: var(--kmcb-nav-hover);
+}
+
+/* Hamburger */
+.kmcb-nav-toggle {
+	display: none;
+	flex-direction: column;
+	justify-content: center;
+	gap: 5px;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	cursor: pointer;
+}
+
+.kmcb-nav-toggle span {
+	display: block;
+	height: 2px;
+	width: 22px;
+	margin: 0 auto;
+	border-radius: 2px;
+	background: var(--kmcb-nav-toggle);
+	transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.kmcb-nav.is-open .kmcb-nav-toggle span:nth-child(1) {
+	transform: translateY(7px) rotate(45deg);
+}
+
+.kmcb-nav.is-open .kmcb-nav-toggle span:nth-child(2) {
+	opacity: 0;
+}
+
+.kmcb-nav.is-open .kmcb-nav-toggle span:nth-child(3) {
+	transform: translateY(-7px) rotate(-45deg);
+}
+
+/*
+ * Collapsed layout. The breakpoint is a widget setting, so this uses a
+ * container-independent media query driven by a class the script adds rather
+ * than a fixed width.
+ */
+.kmcb-nav--collapsed .kmcb-nav-toggle {
+	display: flex;
+}
+
+.kmcb-nav--collapsed .kmcb-nav-inner {
+	flex-wrap: wrap;
+	row-gap: 0;
+}
+
+/* Collapsed, the first row holds only the logo and the hamburger, and both
+   are flex:none, so without this they sit together against one edge with the
+   rest of the bar empty. The panel below is a full-width row of its own and
+   is not affected. Logical, so it holds on the Arabic side too. */
+.kmcb-nav--collapsed .kmcb-nav-toggle {
+	margin-inline-start: auto;
+}
+
+.kmcb-nav--collapsed .kmcb-nav-panel {
+	display: none;
+	flex: 0 0 100%;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 14px;
+	padding-top: 18px;
+}
+
+.kmcb-nav--collapsed.is-open .kmcb-nav-panel {
+	display: flex;
+}
+
+.kmcb-nav--collapsed .kmcb-nav-list {
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 14px;
+	margin: 0;
+	width: 100%;
+}
+
+.kmcb-nav--collapsed .kmcb-nav-list a {
+	display: block;
+	width: 100%;
+	padding: 4px 0;
+}
+
+.kmcb-nav--collapsed .kmcb-nav-list .sub-menu {
+	position: static;
+	display: block;
+	margin: 8px 0 0 14px;
+	padding: 0;
+	box-shadow: none;
+	background: transparent;
+}
+
+.kmcb-nav--collapsed .kmcb-nav-lang,
+.kmcb-nav--collapsed .kmcb-nav-lang-menu {
+	align-self: flex-start;
+}
+
+/* On a phone the panel is a column, so the languages sit open under the
+   button instead of hanging off the right edge where there is no room. */
+.kmcb-nav--collapsed .kmcb-nav-lang-list {
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+.kmcb-nav--collapsed .kmcb-nav-lang-list .sub-menu {
+	position: static;
+	display: block;
+	min-width: 0;
+	margin: 8px 0 0 14px;
+	padding: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+.kmcb-nav--collapsed .kmcb-nav-lang-list .sub-menu a {
+	padding: 4px 0;
+}
+
+/* ================================================== Responsive, small screens
+ *
+ * Everything above already scales through its own custom properties and the
+ * Elementor responsive controls. These are the tightening-up rules that only
+ * make sense on a narrow screen.
+ */
+
+@media (max-width: 767px) {
+	/* Accordion + FAQ */
+	.kmcb-acc-head {
+		padding: 16px 16px;
+		gap: 12px;
+	}
+
+	.kmcb-acc-title {
+		font-size: calc(15px * var(--kmcb-fs, 1));
+	}
+
+	.kmcb-acc-body {
+		padding: 14px 16px 16px;
+	}
+
+	.kmcb-acc-content table,
+	.kmcb-description table {
+		display: block;
+		overflow-x: auto;
+		white-space: nowrap;
+	}
+
+	.kmcb-acc-icon-wrap {
+		width: 26px;
+		height: 26px;
+	}
+
+	/* Related products */
+	.kmcb-related-heading {
+		font-size: calc(22px * var(--kmcb-fs, 1));
+		margin-bottom: 20px;
+	}
+
+	/* Segmented switcher */
+	.kmcb-switch {
+		width: 100% !important;
+	}
+
+	.kmcb-switch-item {
+		padding: 0 12px;
+		font-size: 12px;
+		letter-spacing: 0.03em;
+	}
+
+	/* Buttons stretch, so a thumb can hit them */
+	.kmcb-btn {
+		width: 100%;
+	}
+
+	.kmcb-btn-wrap {
+		width: 100%;
+	}
+
+	/* Feature list */
+	.kmcb-features {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.kmcb-feature-title {
+		font-size: 16px;
+	}
+
+	/* Marquee */
+	.kmcb-marquee {
+		--kmcb-mq-gap: 34px;
+	}
+
+	/* Shape image */
+	.kmcb-shape {
+		--kmcb-shape-x: 8px;
+		--kmcb-shape-y: 8px;
+	}
+
+	/* Product gallery */
+	.kmcb-gallery-main {
+		padding: 22px;
+	}
+
+	.kmcb-gallery {
+		--kmcb-thumb-size: 68px;
+	}
+
+	/* Product page text */
+	.kmcb-term-line {
+		font-size: calc(12px * var(--kmcb-fs, 1));
+	}
+}
+
+@media (max-width: 480px) {
+	.kmcb-switch-item {
+		font-size: 11px;
+		padding: 0 8px;
+	}
+
+	.kmcb-gallery {
+		--kmcb-thumb-size: 58px;
+	}
+
+	.kmcb-related-heading {
+		font-size: calc(20px * var(--kmcb-fs, 1));
+	}
+}
+
+/* ============================================ Related products, swipe on phones
+ *
+ * The next card is left partly visible so the row reads as scrollable without
+ * needing arrows or dots.
+ *
+ * No -webkit-overflow-scrolling here. It has done nothing since iOS 13, where
+ * momentum scrolling became the default, and the layer it used to force is a
+ * known source of stale pixels: the row stays painted over the next page after
+ * tapping a card in it.
+ */
+
+.kmcb-related {
+	--kmcb-peek: 78%;
+}
+
+@media (max-width: 767px) {
+	.kmcb-related--swipe .kmcb-grid {
+		display: flex;
+		gap: var(--kmcb-gap-x);
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+		padding-bottom: 2px;
+	}
+
+	.kmcb-related--swipe .kmcb-grid::-webkit-scrollbar {
+		display: none;
+	}
+
+	.kmcb-related--swipe .kmcb-card {
+		flex: 0 0 var(--kmcb-peek);
+		scroll-snap-align: start;
+	}
+
+	/*
+	 * Let the row bleed to the screen edge even when the section has padding,
+	 * so the peeking card is cut by the viewport rather than floating.
+	 */
+	.kmcb-related--swipe .kmcb-grid {
+		margin-inline: calc(var(--kmcb-related-bleed, 0px) * -1);
+		padding-inline: var(--kmcb-related-bleed, 0px);
+	}
+}
+
+/* --------------------------------------------------- Navbar, transparent state
+ *
+ * Set per page in the Header box, so one shared header can sit over a hero on
+ * some pages and stay solid on the rest.
+ */
+
+.kmcb-nav--transparent {
+	--kmcb-nav-bg: var(--kmcb-nav-t-bg, transparent);
+	--kmcb-nav-color: var(--kmcb-nav-t-color, #fff);
+	--kmcb-nav-hover: var(--kmcb-nav-t-hover, #fff);
+	--kmcb-nav-active: var(--kmcb-nav-t-active, #fff);
+	--kmcb-nav-lang-color: var(--kmcb-nav-t-lang-color, #fff);
+	--kmcb-nav-lang-border: var(--kmcb-nav-t-lang-border, #fff);
+	--kmcb-nav-lang-bg: transparent;
+	--kmcb-nav-toggle: var(--kmcb-nav-t-toggle, #fff);
+}
+
+/* The Elementor box-shadow control targets the inner bar, so it has to be
+   overridden here rather than simply left unset. */
+.kmcb-nav--flat .kmcb-nav-inner {
+	box-shadow: none;
+}
+
+/* The collapsed panel needs a surface of its own: menu links in white on a
+   clear background are unreadable once the bar drops onto the page. */
+.kmcb-nav--transparent.kmcb-nav--collapsed.is-open .kmcb-nav-inner {
+	background: var(--kmcb-nav-t-panel-bg, rgba(0, 0, 0, 0.55));
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+}
+
+/* ------------------------------------------------------ Navbar, floating over
+ *
+ * The bar keeps its own colour; it is simply lifted out of the flow so the
+ * section below starts at the top of the page and shows around it.
+ */
+
+.kmcb-nav--overlay {
+	position: absolute;
+	top: var(--kmcb-nav-top, 20px);
+	left: 0;
+	right: 0;
+	z-index: var(--kmcb-nav-z, 20);
+}
+
+/*
+ * The wrapper Elementor puts around the widget still occupies a row once the
+ * bar itself is absolutely placed, which shows as a band above the section
+ * below. Collapse it, and neutralise the padding and min-height a header
+ * container usually carries so the hero can start at the very top.
+ */
+.kmcb-nav-host {
+	position: static;
+	height: 0;
+	min-height: 0;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.kmcb-nav-host > .elementor-widget-container {
+	height: 0;
+}
+
+/* The container the header sits in, when it holds nothing but this bar. */
+.elementor-element:has( > .elementor-widget-container > .kmcb-nav--overlay ),
+.e-con:has( > .kmcb-nav-host ),
+.elementor-section:has( .kmcb-nav-host ) {
+	padding-top: 0;
+	padding-bottom: 0;
+	min-height: 0;
+}

@@ -1,0 +1,305 @@
+/* ========================================================== Wave edges
+
+   The wavy edge drawn on the outside of a container, so the shape rises
+   into whatever section sits next to it. This is how the footer's top
+   edge is built.
+
+   Driven three ways, all landing on the same custom properties:
+
+     - Elementor's Container, Style > Wave Edge (includes/class-kmcb-container.php)
+     - the Wave Edge widget (widgets/class-kmcb-wave-widget.php)
+     - by hand, adding "kmcb-wave-top" to a container's CSS Classes
+
+   This stylesheet always loads, because the containers using it hold
+   none of this plugin's widgets and would never pull in the main one. */
+
+.kmcb-wave-top,
+.kmcb-wave-bottom,
+.kmcb-wave-both {
+	--kmcb-wave-color: #2c2c2c;
+	--kmcb-wave-h: 45px;
+	--kmcb-wave-tile: 115px;
+
+	position: relative;
+}
+
+/* Elementor already owns ::before on a container: it is the background
+   overlay, and its rule sets content, inset and size at the same
+   specificity as a single class, so on source order Elementor wins and
+   the top edge never renders. ::after is untouched, which is why the
+   bottom edge worked and the top one did not.
+
+   The class is doubled to outweigh that rule, and every property it
+   sets is written again here rather than relied on. */
+.kmcb-wave-top.kmcb-wave-top::before,
+.kmcb-wave-both.kmcb-wave-both::before,
+.kmcb-wave-bottom::after,
+.kmcb-wave-both::after {
+	content: "";
+	display: block;
+	position: absolute;
+	left: 0;
+	right: 0;
+	width: auto;
+	height: var(--kmcb-wave-h);
+	background: var(--kmcb-wave-color);
+	pointer-events: none;
+	z-index: 1;
+	-webkit-mask-repeat: repeat-x;
+	mask-repeat: repeat-x;
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-size: var(--kmcb-wave-tile) 100%;
+	mask-size: var(--kmcb-wave-tile) 100%;
+}
+
+/* The 1px overlap hides the hairline some browsers leave between the
+   edge and the container it belongs to. */
+.kmcb-wave-top.kmcb-wave-top::before,
+.kmcb-wave-both.kmcb-wave-both::before {
+	top: auto;
+	bottom: 100%;
+	margin-bottom: -1px;
+}
+
+.kmcb-wave-bottom::after,
+.kmcb-wave-both::after {
+	top: 100%;
+	bottom: auto;
+	margin-top: -1px;
+}
+
+/* A boxed container whose edge should still run the whole screen. */
+.kmcb-wave-full.kmcb-wave-full::before,
+.kmcb-wave-full.kmcb-wave-full::after {
+	left: 50%;
+	right: auto;
+	width: 100vw;
+	max-width: 100vw;
+	transform: translateX(-50%);
+}
+
+/* ------------------------------------------------------------ Shapes
+
+   Default is the smooth wave from the design. Crests always point away
+   from the container, so top and bottom edges use mirrored masks. */
+
+.kmcb-wave-top.kmcb-wave-top::before,
+.kmcb-wave-both.kmcb-wave-both::before {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 Q10 0 20 10 T40 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 Q10 0 20 10 T40 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+.kmcb-wave-bottom::after,
+.kmcb-wave-both::after {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H40 V10 Q30 20 20 10 T0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H40 V10 Q30 20 20 10 T0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+/* Round bumps instead of the wave. */
+.kmcb-waveshape-round.kmcb-wave-top.kmcb-wave-top::before,
+.kmcb-waveshape-round.kmcb-wave-both.kmcb-wave-both::before,
+.kmcb-wave-smooth.kmcb-wave-top.kmcb-wave-top::before {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 A10 10 0 0 1 20 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 A10 10 0 0 1 20 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+.kmcb-waveshape-round.kmcb-wave-bottom::after,
+.kmcb-waveshape-round.kmcb-wave-both::after {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H20 V10 A10 10 0 0 1 0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H20 V10 A10 10 0 0 1 0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+/* -------------------------------------------------- Drawn inside
+
+   The edge sits on the inside of the container's own edge and is
+   filled with the colour of the section next door, so the container
+   is carved rather than grown. This is the hero: a blue block whose
+   bottom edge is cut away by a white wave.
+
+   Crests point the other way here, because the edge now reaches into
+   the container instead of out of it. */
+
+.kmcb-waveinside-yes.kmcb-wave-top.kmcb-wave-top::before,
+.kmcb-waveinside-yes.kmcb-wave-both.kmcb-wave-both::before {
+	top: 0;
+	bottom: auto;
+	margin-bottom: 0;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H40 V10 Q30 20 20 10 T0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H40 V10 Q30 20 20 10 T0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+.kmcb-waveinside-yes.kmcb-wave-bottom::after,
+.kmcb-waveinside-yes.kmcb-wave-both::after {
+	top: auto;
+	bottom: 0;
+	margin-top: 0;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 Q10 0 20 10 T40 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 Q10 0 20 10 T40 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+.kmcb-waveinside-yes.kmcb-waveshape-round.kmcb-wave-top.kmcb-wave-top::before,
+.kmcb-waveinside-yes.kmcb-waveshape-round.kmcb-wave-both.kmcb-wave-both::before {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H20 V10 A10 10 0 0 1 0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H20 V10 A10 10 0 0 1 0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+.kmcb-waveinside-yes.kmcb-waveshape-round.kmcb-wave-bottom::after,
+.kmcb-waveinside-yes.kmcb-waveshape-round.kmcb-wave-both::after {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 A10 10 0 0 1 20 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 A10 10 0 0 1 20 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+/* An edge sitting outside the container overlaps the neighbouring
+   section, so the container must not clip it. Elementor's own default
+   is visible; this covers a container someone has set to hidden. A
+   carved edge stays within the container and needs no such help. */
+.kmcb-wave-top:not(.kmcb-waveinside-yes),
+.kmcb-wave-both:not(.kmcb-waveinside-yes) {
+	overflow: visible;
+}
+
+/* ---------------------------------------------- Hand-typed shorthands */
+
+.kmcb-wave-sm    { --kmcb-wave-h: 26px; --kmcb-wave-tile: 70px; }
+.kmcb-wave-lg    { --kmcb-wave-h: 66px; --kmcb-wave-tile: 160px; }
+.kmcb-wave-white { --kmcb-wave-color: #fff; }
+.kmcb-wave-blue  { --kmcb-wave-color: #e2f4fd; }
+
+/* ------------------------------------------------- Wave Edge widget
+
+   The same edge dropped in as a widget instead, for a container that
+   cannot be edited, such as one belonging to the theme. */
+
+.kmcb-wave {
+	--kmcb-wave-color: #2c2c2c;
+	--kmcb-wave-h: 45px;
+	--kmcb-wave-tile: 115px;
+
+	height: var(--kmcb-wave-h);
+	background: var(--kmcb-wave-color);
+	pointer-events: none;
+	-webkit-mask-repeat: repeat-x;
+	mask-repeat: repeat-x;
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-size: var(--kmcb-wave-tile) 100%;
+	mask-size: var(--kmcb-wave-tile) 100%;
+}
+
+/* Elementor containers are position:relative, so these resolve against
+   the container the widget was dropped into, clearing its padding. */
+.kmcb-wave--above,
+.kmcb-wave--below {
+	position: absolute;
+	left: 0;
+	right: 0;
+	z-index: 1;
+}
+
+.kmcb-wave--above {
+	bottom: 100%;
+	margin-bottom: -1px;
+}
+
+.kmcb-wave--below {
+	top: 100%;
+	margin-top: -1px;
+}
+
+.kmcb-wave--full {
+	left: 50%;
+	right: auto;
+	width: 100vw;
+	max-width: 100vw;
+	transform: translateX(-50%);
+}
+
+.kmcb-wave--scallop-up {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 A10 10 0 0 1 20 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 A10 10 0 0 1 20 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+.kmcb-wave--scallop-down {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H20 V10 A10 10 0 0 1 0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H20 V10 A10 10 0 0 1 0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+.kmcb-wave--wave-up {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 Q10 0 20 10 T40 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20 V10 Q10 0 20 10 T40 10 V20 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+.kmcb-wave--wave-down {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H40 V10 Q30 20 20 10 T0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H40 V10 Q30 20 20 10 T0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+/* The widget holds nothing but an absolutely positioned edge, so on the
+   live site its wrapper is dissolved: a flex container would otherwise
+   count it as an item and add one gap of empty space. The wrapper stays
+   in the editor so the widget can still be selected. */
+body:not(.elementor-editor-active) .elementor-widget-kmcb_wave_edge,
+body:not(.elementor-editor-active) .elementor-widget-kmcb_wave_edge > .elementor-widget-container {
+	display: contents;
+}
+
+/* =========================================================== Floating
+
+   A constant drift, set on a container or widget under
+   Advanced > Floating. Carried over from the portfolio builder.
+
+   The distance is a custom property rather than a fixed value in the
+   keyframes, so one pair of keyframes serves every size. */
+
+.kmcb-float-updown,
+.kmcb-float-sideway {
+	--kmcb-float-d: 14px;
+	--kmcb-float-t: 3s;
+	--kmcb-float-delay: 0s;
+
+	animation-duration: var(--kmcb-float-t);
+	animation-delay: var(--kmcb-float-delay);
+	animation-timing-function: ease-in-out;
+	animation-iteration-count: infinite;
+	/* Both halves of the trip are in the keyframes, so it returns to
+	   where it started rather than snapping back. */
+	animation-direction: normal;
+	animation-fill-mode: none;
+}
+
+.kmcb-float-updown {
+	animation-name: kmcb-float-updown;
+}
+
+.kmcb-float-sideway {
+	animation-name: kmcb-float-sideway;
+}
+
+@keyframes kmcb-float-updown {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(calc(var(--kmcb-float-d) * -1));
+	}
+}
+
+@keyframes kmcb-float-sideway {
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+	50% {
+		transform: translateX(var(--kmcb-float-d));
+	}
+}
+
+/* Constant motion is the kind this setting is meant to stop. */
+@media (prefers-reduced-motion: reduce) {
+	.kmcb-float-updown,
+	.kmcb-float-sideway {
+		animation: none;
+	}
+}
